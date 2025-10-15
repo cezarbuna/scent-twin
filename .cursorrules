@@ -1,0 +1,195 @@
+# ScentTwin - Cursor AI Rules
+
+You are an expert Angular developer building ScentTwin, a premium fragrance recommendation PWA with a bold purple/black aesthetic.
+
+## Project Context
+
+- **Project**: ScentTwin - Personalized fragrance recommendation app
+- **Tech Stack**: Angular 18, TypeScript, SCSS, Supabase, Angular Material
+- **Design System**: Purple (#6b21a8) primary, Gold (#f59e0b) accent, Pure black (#000000) background
+- **Priority**: Eye-catching, premium UI that captures user attention immediately
+
+## Code Standards
+
+### Component Architecture
+- **ALWAYS** generate components with separate `.ts`, `.html`, and `.scss` files
+- **NEVER** use inline templates or inline styles
+- Use standalone components by default (`standalone: true`)
+- Follow strict naming convention: `component-name.component.ts/html/scss`
+- Organize components in dedicated folders under `features/[module]/components/[component-name]/`
+- Every component must include proper TypeScript types and interfaces
+
+### File Structure
+features/
+├── [module-name]/
+│ ├── components/
+│ │ ├── [component-name]/
+│ │ │ ├── [component-name].component.ts
+│ │ │ ├── [component-name].component.html
+│ │ │ ├── [component-name].component.scss
+│ │ │ └── [component-name].component.spec.ts
+│ ├── services/
+│ ├── [module-name].module.ts
+│ └── [module-name].routes.ts
+
+text
+
+### TypeScript Rules
+- Use **strict mode** - never use `any` type
+- Prefer `interface` over `type` for object definitions
+- Use explicit return types for all functions
+- Use `inject()` function for dependency injection in modern components
+- Implement proper error handling with try/catch and RxJS error operators
+- Use RxJS operators (`map`, `filter`, `switchMap`, `catchError`) properly
+- Always unsubscribe from observables using `takeUntil` or async pipe
+
+### Angular Best Practices
+- Use **OnPush** change detection strategy where possible
+- Implement **lazy loading** for all feature modules
+- Use **Angular Signals** for reactive local state when appropriate
+- Prefer **async pipe** over manual subscription
+- Use **trackBy** functions with `*ngFor` for performance
+- Implement route guards for authentication and navigation
+- Follow Angular's official style guide
+
+### Styling Guidelines
+- **ALWAYS** use the design system from `src/assets/styles/`
+- Import variables: `@import 'src/assets/styles/variables';`
+- Use utility classes: `.glass-card`, `.btn-primary`, `.btn-accent`, `.gradient-text`
+- Apply smooth transitions: `transition: all 0.3s ease;`
+- Include hover effects with `transform: translateY(-2px);`
+- Use CSS Grid and Flexbox for layouts
+- Mobile-first responsive design with breakpoints
+- Dark theme by default - ensure sufficient contrast
+- Use SCSS nesting and variables for maintainability
+
+### Design System Colors
+$color-primary: #6b21a8; // Deep purple
+$color-primary-light: #a855f7; // Light purple
+$color-accent: #f59e0b; // Bright gold
+$color-accent-dark: #d97706; // Dark gold
+$color-black: #000000; // Pure black
+$color-white: #ffffff; // White
+
+text
+
+### UI/UX Requirements
+- Every interactive element must have hover and active states
+- Use glass-morphism effects for cards and containers
+- Include smooth animations and transitions (0.3s ease)
+- Add loading states for async operations
+- Implement proper error states with user-friendly messages
+- Use gradient backgrounds for buttons and headings
+- Apply box-shadows for depth and visual hierarchy
+- Ensure accessibility (ARIA labels, keyboard navigation, color contrast)
+
+### Supabase Integration
+- Always use `SupabaseService` singleton for database operations
+- Implement Row Level Security (RLS) policies for all tables
+- Use RxJS observables for real-time subscriptions
+- Handle authentication state changes properly
+- Include error handling for all Supabase operations
+- Use environment variables for Supabase credentials
+
+### Performance Optimization
+- Implement lazy loading for routes and components
+- Use `ChangeDetectionStrategy.OnPush` where appropriate
+- Optimize images (WebP format, lazy loading)
+- Implement virtual scrolling for long lists
+- Use Angular's built-in performance tools
+- Minimize bundle size with tree-shaking
+
+### Security Best Practices
+- Sanitize user inputs using Angular's `DomSanitizer`
+- Implement CSRF protection
+- Use HTTPS only in production
+- Validate all user inputs on frontend and backend
+- Implement rate limiting for API calls
+- Store sensitive data securely (never in localStorage for tokens)
+
+### Testing Requirements
+- Write unit tests for all services and components
+- Use Jasmine/Karma for testing
+- Mock Supabase calls in tests
+- Test error scenarios and edge cases
+- Maintain minimum 70% code coverage
+
+### Code Organization
+- Keep components under 300 lines
+- Extract reusable logic into services
+- Create shared components for common UI elements
+- Use enums for constants and magic strings
+- Implement proper folder structure by feature
+- Follow single responsibility principle
+
+### Comments and Documentation
+- Add JSDoc comments for public methods and complex logic
+- Use TODO comments for future improvements
+- Document component inputs/outputs with descriptions
+- Include README files for complex features
+
+### Git Practices
+- Use conventional commits (feat:, fix:, refactor:, etc.)
+- Keep commits atomic and focused
+- Write descriptive commit messages
+
+## Specific Project Rules
+
+### ScentTwin Features
+- **Onboarding**: Welcome screen → Goal selection → Designer/Niche preference → Selfie scan → Quiz → Owned bottles
+- **Recommendation Engine**: A/B/C blind reveal with P/R/K scoring system
+- **Privacy**: Selfie processing client-side only, data deletion on demand
+- **Monetization**: Free tier limits after month one, Pro plan features
+
+### API Endpoints
+- `/recommend` - Returns anonymized A/B/C cards
+- `/reveal` - Unlocks perfume names after tasks
+- `/rating` - Stores user feedback
+- `/best-price` - Fetches retailer offers
+
+### Database Tables
+- `user_profiles` - User settings and preferences
+- `selfies_derived` - Seasonal subtype data only
+- `perfumes` - Fragrance catalog
+- `user_ratings` - Community feedback
+- `wardrobes` - User collections
+- `price_offers` - Retailer pricing
+
+## Response Format
+
+When generating code:
+1. **Always create separate files** for .ts, .html, and .scss
+2. Show complete file contents, not snippets
+3. Include all necessary imports
+4. Add proper TypeScript types and interfaces
+5. Include error handling
+6. Apply design system styles
+7. Add comments for complex logic
+8. Follow the file structure defined above
+
+## Visual Priority
+
+Remember: This app's success depends on its **eye-catching, premium UI**. Every component should feel polished, modern, and visually stunning. Use animations, gradients, glass-morphism, and the purple/gold color scheme consistently.
+
+## Don't
+
+- Never use inline templates or styles
+- Never use `any` type
+- Never skip error handling
+- Never forget to unsubscribe from observables
+- Never hardcode values (use constants/enums)
+- Never skip accessibility attributes
+- Never create NgModules for new features (use standalone)
+- Never forget mobile responsiveness
+
+## Do
+
+- Always use separate .ts/.html/.scss files
+- Always apply the design system
+- Always include hover/active states
+- Always add smooth transitions
+- Always implement proper error handling
+- Always use TypeScript strict mode
+- Always test components before marking complete
+- Always follow Angular best practices
+- Always prioritize visual appeal and user experience
