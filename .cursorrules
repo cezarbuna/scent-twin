@@ -1,0 +1,183 @@
+# ScentTwin - Cursor AI Project Rules
+
+## Project Overview
+ScentTwin is a mobile-first perfume recommendation PWA built with Angular and Supabase.
+Focus: Privacy-first architecture, modern flashy UI, ethical monetization.
+
+## Technology Stack
+- Frontend: Angular 18+ (standalone components), PWA
+- Backend: Supabase (Postgres, Auth, Edge Functions, Storage)
+- Styling: Angular Material + Custom CSS (mobile-first, modern aesthetic)
+- State Management: Angular Signals
+- Image Processing: Client-side only (TensorFlow.js or canvas API)
+
+## Code Style & Structure
+
+### TypeScript
+- ALWAYS use TypeScript strict mode
+- Use explicit types, avoid 'any'
+- Prefer interfaces over types for object shapes
+- Use enums for fixed sets of values
+- Enable strictNullChecks and noImplicitAny
+
+### Angular Components
+- ALWAYS generate components with separate .ts, .html, and .css files (NEVER inline)
+- Use standalone components (no NgModule)
+- Follow naming: feature-name.component.ts/html/css
+- One component per file
+- Use OnPush change detection strategy by default
+- Implement OnDestroy and unsubscribe from observables
+
+### Component Generation Command
+When creating components, ALWAYS use:
+ng generate component path/component-name --standalone --skip-tests=false
+
+text
+
+### File Organization
+src/
+├── app/
+│ ├── core/
+│ │ ├── services/ # Singleton services (auth, api)
+│ │ ├── guards/ # Route guards
+│ │ ├── interceptors/ # HTTP interceptors
+│ │ └── models/ # TypeScript interfaces/types
+│ ├── shared/
+│ │ ├── components/ # Reusable UI components
+│ │ ├── directives/ # Custom directives
+│ │ └── pipes/ # Custom pipes
+│ ├── features/
+│ │ ├── onboarding/ # Welcome, signup, goals
+│ │ ├── selfie/ # Selfie capture & analysis
+│ │ ├── quiz/ # Lifestyle quiz
+│ │ ├── recommendations/ # Card reveals, unlocking
+│ │ ├── wardrobe/ # Saved perfumes
+│ │ └── profile/ # Settings, preferences
+│ └── app.component.ts
+├── assets/
+│ ├── images/
+│ ├── icons/
+│ └── styles/
+└── environments/
+
+text
+
+### CSS & Styling
+- Mobile-first responsive design (min-width breakpoints)
+- Use CSS custom properties (variables) for theming
+- Follow BEM naming convention for custom classes
+- NO inline styles in components
+- Use Angular Material where appropriate, but customize heavily for brand identity
+- Animations: Use Angular animations API for smooth transitions
+- Target minimum viewport: 360px width
+
+### UI/UX Requirements
+- Modern, flashy, attention-grabbing design
+- Smooth animations and transitions (entrance effects, card flips, reveals)
+- Haptic feedback for mobile interactions where appropriate
+- Loading states for all async operations
+- Optimistic UI updates
+- Skeleton screens for content loading
+- Gesture support (swipe, pull-to-refresh)
+- Dark mode support (system preference detection)
+
+### State Management
+- Use Angular Signals for reactive state
+- Services for shared state across components
+- Avoid complex state management libraries unless absolutely necessary
+- Use BehaviorSubject for streams that need initial values
+
+### API & Supabase
+- All Supabase calls through dedicated services
+- Use environment variables for config (NEVER hardcode keys)
+- Implement proper error handling with user-friendly messages
+- Use RLS policies for all database access
+- Implement retry logic for failed requests
+
+### Security & Privacy
+- Client-side image processing only (no raw images to server)
+- Explicit user consent for data collection
+- Clear data deletion mechanisms
+- NEVER log sensitive user data
+- Implement proper CORS policies
+
+### Testing
+- Write unit tests for all services and utility functions
+- Write component tests for critical user flows
+- Use Jest for unit tests
+- Test error states and edge cases
+- Aim for >70% code coverage
+
+### Performance
+- Lazy load feature modules
+- Optimize images (WebP format, responsive sizing)
+- Use trackBy in *ngFor loops
+- Implement virtual scrolling for long lists
+- Minimize bundle size (analyze with webpack-bundle-analyzer)
+- Use service workers for offline capability
+
+### Git Practices
+- Commit after each working feature
+- Use conventional commits (feat:, fix:, refactor:, etc.)
+- Never commit sensitive keys or credentials
+
+### Error Handling
+- Use global error handler
+- Display user-friendly error messages
+- Log errors to external service (optional: Sentry)
+- Provide fallback UI for failures
+
+### Accessibility
+- Semantic HTML elements
+- ARIA labels where needed
+- Keyboard navigation support
+- Minimum touch target size: 44x44px
+- Color contrast compliance (WCAG AA)
+
+## AUTOMATIC TESTING & DEBUGGING PROTOCOL (CRITICAL)
+
+### After Every Code Change:
+1. **ALWAYS run unit tests automatically** using `ng test` or `npm test`
+2. **Read test output** and identify any failing tests
+3. **Fix all failing tests iteratively** until all tests pass
+4. **NEVER consider a task complete** until tests pass
+
+### After Every Feature Implementation:
+1. **ALWAYS run the development server** using `ng serve`
+2. **Monitor terminal output** for compilation errors, warnings, and runtime errors
+3. **Automatically fix any errors** without waiting for user instruction
+4. **Re-run the server** after fixes to verify errors are resolved
+5. **Continue this loop** until the app runs without errors
+
+### Debugging Workflow:
+- If tests fail: Read error messages → Modify code → Re-run tests → Repeat until green
+- If compilation fails: Read error → Fix code → Re-compile → Verify
+- If runtime errors occur: Analyze stack trace → Fix root cause → Re-run → Verify
+- **NEVER ask the user to fix errors** - attempt automatic correction first
+- If stuck after 3 attempts, then explain the issue and ask for guidance
+
+### Commands to Run Automatically:
+- After creating/modifying services: `ng test`
+- After creating/modifying components: `ng test`
+- After major changes: `ng serve` (verify app starts)
+- Before reporting completion: Run both `ng test` AND `ng serve`
+
+### Expected Behavior:
+- Use Agent mode with Auto mode (YOLO mode) enabled
+- Execute terminal commands without asking permission
+- Read and parse terminal output
+- Apply fixes automatically
+- Report final status: "All tests passing ✓" and "App running on localhost:4200 ✓"
+
+## AI Assistant Instructions
+- Before implementing, create a step-by-step plan
+- Ask clarifying questions if requirements are ambiguous
+- **Automatically run tests after implementation**
+- **Automatically run development server to check for errors**
+- **Fix errors iteratively until all tests pass and app runs successfully**
+- Suggest improvements for performance and UX
+- When generating components, ALWAYS create separate .ts, .html, and .css files
+- Prioritize mobile experience in all designs
+- Focus on creating visually stunning, modern UI
+- **NEVER wait for user to tell you to run tests or check for errors - do it automatically**
+- **If errors occur, fix them without asking - only escalate if stuck after multiple attempts**
