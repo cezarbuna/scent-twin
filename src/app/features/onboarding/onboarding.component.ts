@@ -1,51 +1,125 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SupabaseTestService } from '@core/services/supabase-test.service';
+import { Router } from '@angular/router';
+import { trigger, state, style, transition, animate, stagger, query } from '@angular/animations';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './onboarding.component.html',
-  styleUrl: './onboarding.component.css'
+  styleUrl: './onboarding.component.css',
+  animations: [
+    // Fade in animation
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-out', style({ opacity: 1 }))
+      ])
+    ]),
+    // Slide up animation
+    trigger('slideUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(30px)' }),
+        animate('500ms {{delay}}ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ], { params: { delay: 0 } })
+    ]),
+    // Scale in animation for buttons
+    trigger('scaleIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('400ms {{delay}}ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+      ], { params: { delay: 0 } })
+    ]),
+    // Stagger animation for lists
+    trigger('staggerCards', [
+      transition(':enter', [
+        query('.animated-card', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(150, [
+            animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class OnboardingComponent implements OnInit {
-  testResult: any = null;
-  isLoading = false;
+  // Control animation state
+  showContent = false;
 
-  constructor(private supabaseTest: SupabaseTestService) {}
+  // How it works steps
+  steps = [
+    {
+      number: '1',
+      icon: '📸',
+      title: 'Selfie',
+      subtitle: 'Optional',
+      description: 'Quick color analysis on your device'
+    },
+    {
+      number: '2',
+      icon: '✨',
+      title: 'Quiz',
+      subtitle: '45 seconds',
+      description: 'Share your preferences and lifestyle'
+    },
+    {
+      number: '3',
+      icon: '💎',
+      title: 'Discover',
+      subtitle: '3 free reveals',
+      description: 'Get personalized recommendations'
+    }
+  ];
+
+  // Privacy features
+  privacyFeatures = [
+    {
+      icon: '🔒',
+      title: 'Client-Side Processing',
+      description: 'Your selfie never leaves your device. Only color analysis results are stored.'
+    },
+    {
+      icon: '🗑️',
+      title: 'Full Control',
+      description: 'Delete your selfie data anytime with one tap. Complete transparency.'
+    },
+    {
+      icon: '🔗',
+      title: 'External Research',
+      description: 'We link to Fragrantica for reviews. We respect their community and content.'
+    }
+  ];
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    console.log('🚀 Onboarding component loaded');
-    console.log('💡 Tip: Open browser console (F12) to see test results');
+    // Trigger entrance animations after a brief delay
+    setTimeout(() => {
+      this.showContent = true;
+    }, 100);
   }
 
-  async testConnection() {
-    this.isLoading = true;
-    console.log('\n========================================');
-    console.log('🧪 SUPABASE CONNECTION TEST');
-    console.log('========================================\n');
+  /**
+   * Navigate to authentication/signup
+   */
+  getStarted(): void {
+    // Add haptic feedback if available
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
+    
+    this.router.navigate(['/auth']);
+  }
 
-    // Show config (safe info)
-    const config = this.supabaseTest.getConfigInfo();
-    console.log('📋 Configuration:');
-    console.log('  URL:', config.url);
-    console.log('  API Key Length:', config.keyLength, 'characters');
-    console.log('  Configured:', config.configured ? '✅' : '❌');
-    console.log('');
-
-    // Test connection
-    this.testResult = await this.supabaseTest.testConnection();
-    console.log('\n📊 Test Result:', this.testResult);
-
-    // Test auth
-    const authResult = await this.supabaseTest.testAuth();
-    console.log('\n🔐 Auth Test:', authResult);
-
-    console.log('\n========================================');
-    console.log(this.testResult.success ? '✅ TEST PASSED' : '❌ TEST FAILED');
-    console.log('========================================\n');
-
-    this.isLoading = false;
+  /**
+   * Scroll to specific section
+   */
+  scrollToSection(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }

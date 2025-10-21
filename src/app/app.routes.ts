@@ -15,6 +15,13 @@ export const routes: Routes = [
     title: 'Welcome to ScentTwin'
   },
   {
+    path: 'auth',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/auth.component')
+      .then(m => m.AuthComponent),
+    title: 'Sign In - ScentTwin'
+  },
+  {
     path: 'selfie',
     canActivate: [authGuard],
     loadComponent: () => import('./features/selfie/selfie.component')

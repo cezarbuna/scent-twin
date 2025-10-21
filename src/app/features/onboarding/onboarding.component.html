@@ -1,52 +1,217 @@
-<div class="onboarding-container">
-  <div class="test-card">
-    <h1>🧪 Supabase Connection Test</h1>
-    
-    <p class="subtitle">
-      Test your connection to Supabase before applying migrations.
-    </p>
-
-    <button 
-      class="test-button"
-      (click)="testConnection()"
-      [disabled]="isLoading"
-    >
-      {{ isLoading ? '⏳ Testing...' : '🚀 Test Connection' }}
-    </button>
-
-    <div class="result-box" *ngIf="testResult">
-      <div class="result-icon">
-        {{ testResult.success ? '✅' : '❌' }}
-      </div>
-      <h3>{{ testResult.message }}</h3>
-      
-      <div class="details" *ngIf="testResult.details">
-        <pre>{{ testResult.details | json }}</pre>
-      </div>
-
-      <div class="instructions" *ngIf="!testResult.success || testResult.message.includes('not applied')">
-        <h4>📝 Next Steps:</h4>
-        <ol>
-          <li>Open Supabase Dashboard SQL Editor</li>
-          <li>Run <code>ALL_MIGRATIONS_COMBINED.sql</code></li>
-          <li>Run <code>SEED_SAMPLE_PERFUMES.sql</code></li>
-          <li>Test connection again</li>
-        </ol>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h4>💡 Developer Tools</h4>
-      <p>
-        Open your browser console (F12) to see detailed test results.
-        The test will show:
-      </p>
-      <ul>
-        <li>✅ Supabase client initialization</li>
-        <li>🔐 Authentication system status</li>
-        <li>💾 Database connection (if migrations applied)</li>
-        <li>📊 Configuration details</li>
-      </ul>
-    </div>
+<div class="welcome-container" *ngIf="showContent" [@fadeIn]="">
+  
+  <!-- Animated Background Elements -->
+  <div class="background-gradient"></div>
+  <div class="floating-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
   </div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <!-- Perfume Bottle Illustration (CSS only) -->
+      <div class="perfume-bottle" [@slideUp]="{ value: '', params: { delay: 200 }}">
+        <div class="bottle-cap"></div>
+        <div class="bottle-body"></div>
+        <div class="bottle-shine"></div>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="hero-title" [@slideUp]="{ value: '', params: { delay: 400 }}">
+        Find Your<br>
+        <span class="gradient-text">Signature Scent</span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="hero-subtitle" [@slideUp]="{ value: '', params: { delay: 600 }}">
+        Personalized perfume recommendations<br>
+        powered by people like you
+      </p>
+
+      <!-- Primary CTA -->
+      <button 
+        class="cta-primary pulse" 
+        [@scaleIn]="{ value: '', params: { delay: 800 }}"
+        (click)="getStarted()"
+      >
+        <span class="cta-text">Get Started</span>
+        <span class="cta-icon">→</span>
+      </button>
+
+      <!-- Scroll Indicator -->
+      <div class="scroll-indicator" [@slideUp]="{ value: '', params: { delay: 1000 }}">
+        <span class="scroll-text">Learn More</span>
+        <span class="scroll-arrow">↓</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="section how-it-works" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title" [@slideUp]="">
+        How It Works
+      </h2>
+      <p class="section-subtitle" [@slideUp]="">
+        Three simple steps to your perfect match
+      </p>
+
+      <div class="steps-grid" [@staggerCards]="">
+        <div class="step-card glass-card animated-card" *ngFor="let step of steps; let i = index">
+          <div class="step-number">{{ step.number }}</div>
+          <div class="step-icon">{{ step.icon }}</div>
+          <h3 class="step-title">{{ step.title }}</h3>
+          <span class="step-subtitle">{{ step.subtitle }}</span>
+          <p class="step-description">{{ step.description }}</p>
+        </div>
+      </div>
+
+      <!-- Connecting Line (visible on larger screens) -->
+      <svg class="steps-connector" viewBox="0 0 100 10" preserveAspectRatio="none">
+        <line x1="0" y1="5" x2="100" y2="5" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5">
+          <animate attributeName="stroke-dashoffset" from="10" to="0" dur="2s" repeatCount="indefinite" />
+        </line>
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:0.3" />
+            <stop offset="50%" style="stop-color:#ffd700;stop-opacity:0.6" />
+            <stop offset="100%" style="stop-color:#ff6b9d;stop-opacity:0.3" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Privacy First Section -->
+  <section class="section privacy-section" id="privacy">
+    <div class="container">
+      <h2 class="section-title" [@slideUp]="">
+        <span class="privacy-icon">🔒</span>
+        Privacy First
+      </h2>
+      <p class="section-subtitle" [@slideUp]="">
+        Your data, your control. Always.
+      </p>
+
+      <div class="privacy-grid" [@staggerCards]="">
+        <div class="privacy-card glass-card animated-card" *ngFor="let feature of privacyFeatures">
+          <div class="privacy-icon-large">{{ feature.icon }}</div>
+          <h3 class="privacy-title">{{ feature.title }}</h3>
+          <p class="privacy-description">{{ feature.description }}</p>
+        </div>
+      </div>
+
+      <!-- Detailed Privacy Explanation -->
+      <div class="privacy-details glass-card" [@slideUp]="{ value: '', params: { delay: 400 }}">
+        <h4>About Selfie Analysis</h4>
+        <ul>
+          <li>✓ Analyzed on <strong>your device</strong> (client-side only)</li>
+          <li>✓ Only <strong>undertone & contrast</strong> estimates stored</li>
+          <li>✓ No demographics inferred, no outfit tracking</li>
+          <li>✓ Completely <strong>optional</strong> - skip if you prefer</li>
+          <li>✓ Delete anytime with <strong>one tap</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Integration Section -->
+  <section class="section research-section" id="research">
+    <div class="container">
+      <h2 class="section-title" [@slideUp]="">
+        <span class="research-icon">🔗</span>
+        Deep Dive Research
+      </h2>
+      <p class="section-subtitle" [@slideUp]="">
+        Powered by the community, for the community
+      </p>
+
+      <div class="research-card glass-card" [@slideUp]="{ value: '', params: { delay: 200 }}">
+        <div class="research-content">
+          <div class="research-logo">
+            <span class="fragrantica-badge">Fragrantica</span>
+          </div>
+          <p>
+            Every recommendation includes a direct link to <strong>Fragrantica</strong> for 
+            in-depth reviews, user ratings, and community discussions. We respect their work 
+            and don't copy content into our app.
+          </p>
+          <p class="research-note">
+            ScentTwin helps you <em>discover</em>, Fragrantica helps you <em>research</em>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Proposition Section -->
+  <section class="section value-section">
+    <div class="container">
+      <h2 class="section-title" [@slideUp]="">
+        Why ScentTwin?
+      </h2>
+
+      <div class="value-grid" [@staggerCards]="">
+        <div class="value-card glass-card animated-card">
+          <div class="value-icon">🎯</div>
+          <h3>Cohort-Based Scoring</h3>
+          <p>Recommendations from people with similar preferences, not algorithms guessing</p>
+        </div>
+
+        <div class="value-card glass-card animated-card">
+          <div class="value-icon">⚡</div>
+          <h3>45-Second Quiz</h3>
+          <p>Quick, focused questions that actually matter for fragrance matching</p>
+        </div>
+
+        <div class="value-card glass-card animated-card">
+          <div class="value-icon">🎁</div>
+          <h3>Free to Start</h3>
+          <p>Get 3 personalized reveals every week. Unlock more through simple tasks</p>
+        </div>
+
+        <div class="value-card glass-card animated-card">
+          <div class="value-icon">🌐</div>
+          <h3>Research-Ready</h3>
+          <p>Every perfume links to Fragrantica for community reviews and notes breakdown</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="final-cta-card glass-card" [@slideUp]="">
+        <h2 class="final-cta-title">
+          Ready to find your perfect scent?
+        </h2>
+        <p class="final-cta-subtitle">
+          Join thousands discovering fragrances that truly match their style
+        </p>
+        <button 
+          class="cta-primary cta-large pulse" 
+          (click)="getStarted()"
+        >
+          <span class="cta-text">Start Your Journey</span>
+          <span class="cta-icon">✨</span>
+        </button>
+        <p class="cta-note">No credit card required • Takes 60 seconds</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">
+        © 2025 ScentTwin • 
+        <a href="#privacy" (click)="scrollToSection('privacy')">Privacy</a> • 
+        <a href="#how-it-works" (click)="scrollToSection('how-it-works')">How It Works</a>
+      </p>
+    </div>
+  </footer>
+
 </div>

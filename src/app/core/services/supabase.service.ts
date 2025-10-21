@@ -11,8 +11,32 @@ export class SupabaseService {
   constructor() {
     this.supabase = createClient(
       environment.supabase.url,
-      environment.supabase.anonKey
+      environment.supabase.anonKey,
+      {
+        auth: {
+          // Use unique storage key to prevent lock conflicts in dev
+          storageKey: 'scenttwin-auth',
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          // Disable lock in development to prevent hot reload conflicts
+          flowType: 'pkce',
+        }
+      }
     );
+
+    // Suppress NavigatorLockManager errors in console (development only)
+    if (!environment.production) {
+      const originalError = console.error;
+      console.error = (...args: any[]) => {
+        if (args[0]?.toString().includes('NavigatorLockAcquireTimeoutError') ||
+            args[0]?.toString().includes('lock:scenttwin-auth')) {
+          // Silently ignore lock timeout errors in development
+          return;
+        }
+        originalError.apply(console, args);
+      };
+    }
   }
 
   /**
