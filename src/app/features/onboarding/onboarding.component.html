@@ -1,1 +1,52 @@
-<p>onboarding works!</p>
+<div class="onboarding-container">
+  <div class="test-card">
+    <h1>🧪 Supabase Connection Test</h1>
+    
+    <p class="subtitle">
+      Test your connection to Supabase before applying migrations.
+    </p>
+
+    <button 
+      class="test-button"
+      (click)="testConnection()"
+      [disabled]="isLoading"
+    >
+      {{ isLoading ? '⏳ Testing...' : '🚀 Test Connection' }}
+    </button>
+
+    <div class="result-box" *ngIf="testResult">
+      <div class="result-icon">
+        {{ testResult.success ? '✅' : '❌' }}
+      </div>
+      <h3>{{ testResult.message }}</h3>
+      
+      <div class="details" *ngIf="testResult.details">
+        <pre>{{ testResult.details | json }}</pre>
+      </div>
+
+      <div class="instructions" *ngIf="!testResult.success || testResult.message.includes('not applied')">
+        <h4>📝 Next Steps:</h4>
+        <ol>
+          <li>Open Supabase Dashboard SQL Editor</li>
+          <li>Run <code>ALL_MIGRATIONS_COMBINED.sql</code></li>
+          <li>Run <code>SEED_SAMPLE_PERFUMES.sql</code></li>
+          <li>Test connection again</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h4>💡 Developer Tools</h4>
+      <p>
+        Open your browser console (F12) to see detailed test results.
+        The test will show:
+      </p>
+      <ul>
+        <li>✅ Supabase client initialization</li>
+        <li>🔐 Authentication system status</li>
+        <li>💾 Database connection (if migrations applied)</li>
+        <li>📊 Configuration details</li>
+      </ul>
+    </div>
+  </div>
+</div>

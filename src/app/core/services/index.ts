@@ -2,4 +2,5 @@
 export * from './supabase.service';
 export * from './auth.service';
 export * from './recommendation.service';
+export * from './supabase-test.service';
 
