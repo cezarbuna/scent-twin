@@ -1,0 +1,138 @@
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background-color: var(--color-background);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--color-surface-elevated);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-sm) var(--space-md);
+  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0));
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-fixed);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background: rgba(30, 30, 30, 0.95);
+  }
+}
+
+/* Navigation Item */
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 64px;
+  padding: var(--space-xs) var(--space-sm);
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.nav-item:hover {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+}
+
+/* Navigation Icon */
+.nav-icon {
+  font-size: 24px;
+  line-height: 1;
+  display: block;
+}
+
+/* Navigation Label */
+.nav-label {
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  text-align: center;
+}
+
+/* Tablet and Desktop - Hide bottom nav, could add sidebar instead */
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+  
+  .main-content {
+    padding-bottom: 0;
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-md);
+}
+
+.error-message {
+  font-size: var(--font-size-lg);
+  color: var(--color-error);
+  margin-bottom: var(--space-md);
+}
+

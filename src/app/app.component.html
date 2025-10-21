@@ -1,0 +1,39 @@
+<div class="app-container">
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation (Mobile) -->
+  <nav class="bottom-nav" *ngIf="showBottomNav && authService.isAuthenticated()">
+    <a 
+      routerLink="/recommendations" 
+      routerLinkActive="active" 
+      class="nav-item"
+      [class.active]="router.url.includes('/recommendations')"
+    >
+      <span class="nav-icon">💎</span>
+      <span class="nav-label">Discover</span>
+    </a>
+    
+    <a 
+      routerLink="/wardrobe" 
+      routerLinkActive="active" 
+      class="nav-item"
+      [class.active]="router.url.includes('/wardrobe')"
+    >
+      <span class="nav-icon">👜</span>
+      <span class="nav-label">Wardrobe</span>
+    </a>
+    
+    <a 
+      routerLink="/profile" 
+      routerLinkActive="active" 
+      class="nav-item"
+      [class.active]="router.url.includes('/profile')"
+    >
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+  </div>
