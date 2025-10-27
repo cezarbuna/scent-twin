@@ -1,1 +1,47 @@
-<p>selfie works!</p>
+<div class="selfie-container">
+  <div class="selfie-header">
+    <h1 class="title">Optional: Selfie Analysis</h1>
+    <p class="subtitle">Get color-matched recommendations based on your skin tone</p>
+  </div>
+
+  <div class="selfie-content">
+    <div class="info-card glass-card">
+      <div class="info-icon">📸</div>
+      <h2>How It Works</h2>
+      <ul class="info-list">
+        <li>Take a quick selfie in good lighting</li>
+        <li>AI analyzes your skin tone and undertones</li>
+        <li>Get fragrance recommendations that complement your coloring</li>
+        <li><strong>Your photo never leaves your device</strong> ✨</li>
+      </ul>
+    </div>
+
+    <div class="privacy-notice glass-card">
+      <div class="privacy-icon">🔒</div>
+      <h3>Privacy First</h3>
+      <p>All processing happens on your device. Only the color analysis results are stored, never your photo.</p>
+    </div>
+
+    <div class="actions">
+      <button 
+        class="btn-primary" 
+        (click)="startSelfieCapture()"
+        [disabled]="!hasCamera()"
+      >
+        <span class="btn-icon">📷</span>
+        Start Selfie Capture
+      </button>
+
+      <button 
+        class="btn-secondary" 
+        (click)="skipSelfie()"
+      >
+        Skip for Now
+      </button>
+    </div>
+
+    <div *ngIf="!hasCamera()" class="no-camera-warning glass-card">
+      <p>⚠️ Camera access is required for selfie analysis. You can skip this step and use the quiz instead.</p>
+    </div>
+  </div>
+</div>

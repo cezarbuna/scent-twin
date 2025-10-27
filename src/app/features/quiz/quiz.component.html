@@ -1,1 +1,257 @@
-<p>quiz works!</p>
+<div class="quiz-container">
+  <!-- Progress Stepper -->
+  <app-progress-stepper [steps]="steps"></app-progress-stepper>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <!-- Header -->
+    <div class="header">
+      <div class="step-indicator">
+        <span class="step-number">{{ currentStep() + 1 }}/{{ stepTitles.length }}</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="((currentStep() + 1) / stepTitles.length) * 100"></div>
+        </div>
+      </div>
+      <h1 class="title">{{ currentStepTitle }}</h1>
+      <p class="subtitle" *ngIf="currentStep() <= 1">
+        Help us understand your preferences
+      </p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage()" role="alert">
+      <span class="error-icon">⚠️</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+    <!-- Quiz Step Content -->
+    <div class="quiz-content" [@slideInOut]>
+      <!-- Step 0: Intended Contexts (Multi-select) -->
+      <div *ngIf="currentStep() === 0" class="step-content">
+        <p class="question-hint">Select all that apply</p>
+        <div class="options-grid">
+          <div 
+            *ngFor="let option of intendedContexts" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="toggleOption(intendedContexts, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleOption(intendedContexts, option)"
+            (keydown.space)="toggleOption(intendedContexts, option); $event.preventDefault()"
+          >
+            <span class="option-icon">{{ option.icon }}</span>
+            <span class="option-label">{{ option.label }}</span>
+            <div class="checkmark" *ngIf="option.selected">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Climate Preferences (Multi-select) -->
+      <div *ngIf="currentStep() === 1" class="step-content">
+        <p class="question-hint">Select all that apply</p>
+        <div class="options-grid">
+          <div 
+            *ngFor="let option of climateOptions" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="toggleOption(climateOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleOption(climateOptions, option)"
+            (keydown.space)="toggleOption(climateOptions, option); $event.preventDefault()"
+          >
+            <span class="option-icon">{{ option.icon }}</span>
+            <span class="option-label">{{ option.label }}</span>
+            <div class="checkmark" *ngIf="option.selected">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Projection Preference (Single-select) -->
+      <div *ngIf="currentStep() === 2" class="step-content">
+        <p class="question-hint">Choose one</p>
+        <div class="options-list">
+          <div 
+            *ngFor="let option of projectionOptions" 
+            class="option-card glass-card projection-card"
+            [class.selected]="option.selected"
+            (click)="selectSingleOption(projectionOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="selectSingleOption(projectionOptions, option)"
+            (keydown.space)="selectSingleOption(projectionOptions, option); $event.preventDefault()"
+          >
+            <div class="option-header">
+              <span class="option-label">{{ option.label }}</span>
+              <div class="checkmark" *ngIf="option.selected">✓</div>
+            </div>
+            <p class="option-description">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Longevity (Single-select) -->
+      <div *ngIf="currentStep() === 3" class="step-content">
+        <p class="question-hint">Choose one</p>
+        <div class="options-list">
+          <div 
+            *ngFor="let option of longevityOptions" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="selectSingleOption(longevityOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="selectSingleOption(longevityOptions, option)"
+            (keydown.space)="selectSingleOption(longevityOptions, option); $event.preventDefault()"
+          >
+            <div class="option-header">
+              <span class="option-label">{{ option.label }}</span>
+              <div class="checkmark" *ngIf="option.selected">✓</div>
+            </div>
+            <p class="option-description">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Note Likes (Multi-select) -->
+      <div *ngIf="currentStep() === 4" class="step-content">
+        <p class="question-hint">Select notes you enjoy</p>
+        <div class="options-grid note-grid">
+          <div 
+            *ngFor="let option of noteOptions" 
+            class="option-card glass-card note-card"
+            [class.selected]="option.selected"
+            (click)="toggleOption(noteOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleOption(noteOptions, option)"
+            (keydown.space)="toggleOption(noteOptions, option); $event.preventDefault()"
+          >
+            <span class="option-icon">{{ option.icon }}</span>
+            <span class="option-label">{{ option.label }}</span>
+            <div class="checkmark" *ngIf="option.selected">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Note Dislikes (Multi-select) -->
+      <div *ngIf="currentStep() === 5" class="step-content">
+        <p class="question-hint">Select notes to avoid</p>
+        <div class="options-grid note-grid">
+          <div 
+            *ngFor="let option of noteOptions" 
+            class="option-card glass-card note-card"
+            [class.selected]="option.selected"
+            (click)="toggleOption(noteOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleOption(noteOptions, option)"
+            (keydown.space)="toggleOption(noteOptions, option); $event.preventDefault()"
+          >
+            <span class="option-icon">{{ option.icon }}</span>
+            <span class="option-label">{{ option.label }}</span>
+            <div class="checkmark" *ngIf="option.selected">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Budget (Single-select) -->
+      <div *ngIf="currentStep() === 6" class="step-content">
+        <p class="question-hint">Choose one</p>
+        <div class="options-list">
+          <div 
+            *ngFor="let option of budgetOptions" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="selectSingleOption(budgetOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="selectSingleOption(budgetOptions, option)"
+            (keydown.space)="selectSingleOption(budgetOptions, option); $event.preventDefault()"
+          >
+            <div class="option-header">
+              <span class="option-label">{{ option.label }}</span>
+              <div class="checkmark" *ngIf="option.selected">✓</div>
+            </div>
+            <p class="option-description">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Brand Preference (Single-select) -->
+      <div *ngIf="currentStep() === 7" class="step-content">
+        <p class="question-hint">Choose one</p>
+        <div class="options-list">
+          <div 
+            *ngFor="let option of brandOptions" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="selectSingleOption(brandOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="selectSingleOption(brandOptions, option)"
+            (keydown.space)="selectSingleOption(brandOptions, option); $event.preventDefault()"
+          >
+            <div class="option-header">
+              <span class="option-label">{{ option.label }}</span>
+              <div class="checkmark" *ngIf="option.selected">✓</div>
+            </div>
+            <p class="option-description">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Sensitivity Flags (Multi-select, Optional) -->
+      <div *ngIf="currentStep() === 8" class="step-content">
+        <p class="question-hint">Optional: Select any sensitivities</p>
+        <div class="options-grid">
+          <div 
+            *ngFor="let option of sensitivityOptions" 
+            class="option-card glass-card"
+            [class.selected]="option.selected"
+            (click)="toggleOption(sensitivityOptions, option)"
+            [attr.aria-pressed]="option.selected"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="toggleOption(sensitivityOptions, option)"
+            (keydown.space)="toggleOption(sensitivityOptions, option); $event.preventDefault()"
+          >
+            <span class="option-label">{{ option.label }}</span>
+            <div class="checkmark" *ngIf="option.selected">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button 
+        type="button" 
+        class="btn-secondary"
+        (click)="previousStep()"
+        [disabled]="currentStep() === 0 || isLoading()"
+      >
+        <span>← Back</span>
+      </button>
+      <button 
+        type="button" 
+        class="btn-primary"
+        [disabled]="!canProceed || isLoading()"
+        (click)="nextStep()"
+      >
+        <span *ngIf="!isLoading() && currentStep() < stepTitles.length - 1">Next →</span>
+        <span *ngIf="!isLoading() && currentStep() === stepTitles.length - 1">Complete Quiz</span>
+        <span *ngIf="isLoading()" class="spinner">Saving...</span>
+      </button>
+    </div>
+  </div>
+</div>

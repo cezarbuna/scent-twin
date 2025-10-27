@@ -1,1 +1,66 @@
-<p>recommendations works!</p>
+<div class="recommendations-container">
+  <div class="recommendations-header">
+    <h1 class="title">Your Recommendations</h1>
+    <p class="subtitle">Curated just for you based on your preferences</p>
+    <div class="free-reveals-badge">
+      <span class="badge-icon">🎁</span>
+      <span>{{ freeRevealsLeft() }} free reveals remaining</span>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Finding your perfect match...</p>
+  </div>
+
+  <div *ngIf="!isLoading()" class="recommendations-grid">
+    <div 
+      class="perfume-card glass-card" 
+      *ngFor="let perfume of recommendations()"
+      [class.locked]="perfume.isLocked"
+    >
+      <div class="perfume-header">
+        <div class="perfume-brand">{{ perfume.brand }}</div>
+        <div class="match-score">
+          <span class="score-value">{{ perfume.matchScore }}</span>
+          <span class="score-label">% Match</span>
+        </div>
+      </div>
+
+      <h3 class="perfume-name">{{ perfume.name }}</h3>
+      
+      <p class="perfume-description">{{ perfume.description }}</p>
+
+      <div class="perfume-notes">
+        <span class="notes-label">Notes:</span>
+        <div class="notes-tags">
+          <span class="note-tag" *ngFor="let note of perfume.notes">{{ note }}</span>
+        </div>
+      </div>
+
+      <div class="perfume-footer">
+        <div class="perfume-price">From ${{ perfume.price }}</div>
+        <button 
+          class="action-btn"
+          [class.primary]="!perfume.isLocked"
+          [class.secondary]="perfume.isLocked"
+          (click)="perfume.isLocked ? unlockRecommendation(perfume.id) : viewDetails(perfume.id)"
+        >
+          <span *ngIf="perfume.isLocked">🔓 Unlock</span>
+          <span *ngIf="!perfume.isLocked">View Details</span>
+        </button>
+      </div>
+
+      <div *ngIf="perfume.isLocked" class="lock-overlay">
+        <div class="lock-icon">🔒</div>
+        <p class="unlock-method">{{ perfume.unlockMethod }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recommendations-footer">
+    <button class="btn-secondary">
+      Update Preferences
+    </button>
+  </div>
+</div>
