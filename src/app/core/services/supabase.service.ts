@@ -19,8 +19,8 @@ export class SupabaseService {
           autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
-          // Disable lock in development to prevent hot reload conflicts
-          flowType: 'pkce',
+          // PKCE is only needed for OAuth flows, not email/password
+          // flowType: 'pkce', // Removed to fix email/password sign-in
         }
       }
     );

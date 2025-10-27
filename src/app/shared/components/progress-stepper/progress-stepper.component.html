@@ -1,0 +1,18 @@
+<div class="progress-stepper">
+  <div class="steps-container">
+    <div 
+      *ngFor="let step of steps; let i = index" 
+      class="step"
+      [class.completed]="step.status === 'completed'"
+      [class.current]="step.status === 'current'"
+      [class.upcoming]="step.status === 'upcoming'"
+    >
+      <div class="step-indicator">
+        <div class="step-number" *ngIf="step.status !== 'completed'">{{ i + 1 }}</div>
+        <div class="step-checkmark" *ngIf="step.status === 'completed'">✓</div>
+      </div>
+      <div class="step-label">{{ step.label }}</div>
+      <div class="step-connector" *ngIf="i < steps.length - 1"></div>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
-import { User } from '@core/models';
+import { User, userProfileFromDb } from '@core/models';
 
 @Injectable({
   providedIn: 'root'
@@ -57,17 +57,19 @@ export class AuthService {
       });
 
       if (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: this.transformErrorMessage(error.message) };
       }
 
       if (data.user) {
-        // Create user profile in database
-        await this.createUserProfile(data.user.id, email);
+        // User and profile records are created automatically by database trigger
+        // Set user and navigate to goal selection
+        await this.setUser(data.user);
+        this.router.navigate(['/goals']);
       }
 
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message };
+      return { success: false, error: this.transformErrorMessage(error.message) };
     }
   }
 
@@ -76,23 +78,62 @@ export class AuthService {
    */
   async signIn(email: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
+      console.log('🔐 Attempting sign in for:', email);
+      
       const { data, error } = await this.supabase.getClient().auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        return { success: false, error: error.message };
+        console.error('❌ Sign in error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          code: error.code,
+        });
+        return { success: false, error: this.transformErrorMessage(error.message) };
       }
+
+      console.log('✅ Sign in successful, user:', data.user?.id);
 
       if (data.user) {
         await this.setUser(data.user);
-        this.router.navigate(['/recommendations']);
+        // Check if user has completed goal selection
+        const profile = this.currentUser()?.profile;
+        if (!profile?.primaryGoals || profile.primaryGoals.length === 0) {
+          this.router.navigate(['/goals']);
+        } else {
+          this.router.navigate(['/recommendations']);
+        }
       }
 
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message };
+      console.error('❌ Unexpected sign in error:', error);
+      return { success: false, error: this.transformErrorMessage(error.message) };
+    }
+  }
+
+  /**
+   * Sign in with Google OAuth
+   */
+  async signInWithGoogle(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data, error } = await this.supabase.getClient().auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth/callback',
+        },
+      });
+
+      if (error) {
+        return { success: false, error: this.transformErrorMessage(error.message) };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: this.transformErrorMessage(error.message) };
     }
   }
 
@@ -146,47 +187,75 @@ export class AuthService {
   }
 
   /**
-   * Create user profile in database
+   * Note: User and profile records are created automatically by database trigger
+   * on auth.users INSERT. No manual creation needed.
    */
-  private async createUserProfile(userId: string, email: string): Promise<void> {
-    try {
-      await this.supabase.getClient()
-        .from('user_profiles')
-        .insert({
-          user_id: userId,
-          email,
-          quiz_completed: false,
-          is_premium: false,
-          unlocked_perfumes: [],
-          created_at: new Date().toISOString(),
-        });
-    } catch (error) {
-      console.error('Error creating user profile:', error);
-    }
-  }
 
   /**
    * Set current user
    */
-  private async setUser(user: any): Promise<void> {
-    // Fetch full user profile from database
-    const { data: profile } = await this.supabase.getClient()
-      .from('user_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+    private async setUser(user: any): Promise<void> {
+        console.log('🔍 setUser called with user:', user);
 
-    const fullUser: User = {
-      id: user.id,
-      email: user.email,
-      createdAt: new Date(user.created_at),
-      updatedAt: new Date(user.updated_at),
-      profile: profile || undefined,
-    };
+        // Fetch full user profile from database
+        // Use maybeSingle() instead of single() to handle 0 or 1 rows gracefully
+        const query = this.supabase.getClient()
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', user.id);
+        
+        console.log('🔍 Executing query:', query);
+        console.log('🔍 Query details:', {
+            table: 'user_profiles',
+            select: '*',
+            filter: `user_id = ${user.id}`,
+            user_id: user.id,
+            auth_uid: 'Will be checked in RLS'
+        });
 
-    this.currentUser.set(fullUser);
-    this.isAuthenticated.set(true);
-  }
+        const { data: profile, error } = await query.maybeSingle();
+
+        console.log('📊 Profile fetch result:', { profile, error });
+        console.log('📊 Error details:', error ? {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint
+        } : 'No error');
+
+        if (error) {
+            console.error('❌ Error fetching user profile:', error);
+        }
+
+        if (!profile) {
+            console.warn('⚠️ No profile found for user:', user.id);
+            console.log('🔍 Checking if this is an RLS issue...');
+            
+            // Try to debug RLS by checking auth.uid()
+            const { data: authCheck } = await this.supabase.getClient()
+                .from('user_profiles')
+                .select('user_id')
+                .limit(1);
+            
+            console.log('🔍 Auth check result:', authCheck);
+        } else {
+            console.log('✅ Profile found:', profile);
+        }
+
+        const fullUser: User = {
+            id: user.id,
+            email: user.email,
+            createdAt: new Date(user.created_at),
+            updatedAt: new Date(user.updated_at),
+            profile: profile ? userProfileFromDb(profile) : undefined,
+        };
+
+        console.log('👤 Full user object:', fullUser);
+        console.log('📋 Profile after transformation:', fullUser.profile);
+
+        this.currentUser.set(fullUser);
+        this.isAuthenticated.set(true);
+    }
 
   /**
    * Clear current user
@@ -208,6 +277,73 @@ export class AuthService {
    */
   isUserAuthenticated(): boolean {
     return this.isAuthenticated();
+  }
+
+  /**
+   * Update user profile with selected goals
+   */
+  async updateUserGoals(goals: string[], scenarioWeights?: Record<string, number>): Promise<{ success: boolean; error?: string }> {
+    try {
+      const user = this.currentUser();
+      if (!user) {
+        return { success: false, error: 'User not authenticated' };
+      }
+
+      // Create equal weights for selected goals if not provided
+      const weights = scenarioWeights || goals.reduce((acc, goal) => {
+        acc[goal.toLowerCase().replace(/\s+/g, '_')] = 1.0 / goals.length;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const { error } = await this.supabase.getClient()
+        .from('user_profiles')
+        .update({
+          primary_goals: goals,
+          scenario_weights: weights,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+
+      if (error) {
+        return { success: false, error: this.transformErrorMessage(error.message) };
+      }
+
+      // Refresh user data
+      await this.setUser({ id: user.id, email: user.email });
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: this.transformErrorMessage(error.message) };
+    }
+  }
+
+  /**
+   * Transform Supabase error messages to user-friendly messages
+   */
+  private transformErrorMessage(message: string): string {
+    const errorMap: Record<string, string> = {
+      'Invalid login credentials': 'Incorrect email or password. Please try again.',
+      'User already registered': 'An account with this email already exists. Try signing in.',
+      'Email not confirmed': 'Please check your email and confirm your account before signing in.',
+      'Password should be at least 6 characters': 'Password must be at least 8 characters long.',
+      'Unable to validate email address': 'Please enter a valid email address.',
+      'Signups not allowed': 'New registrations are currently disabled. Please contact support.',
+      'User not found': 'No account found with this email address.',
+    };
+
+    // Check for exact matches
+    for (const [key, value] of Object.entries(errorMap)) {
+      if (message.includes(key)) {
+        return value;
+      }
+    }
+
+    // Default fallback
+    if (message.toLowerCase().includes('network')) {
+      return 'Connection error. Please check your internet and try again.';
+    }
+
+    return message;
   }
 }
 

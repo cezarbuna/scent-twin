@@ -1,0 +1,24 @@
+<div class="tooltip-container">
+  <button 
+    type="button"
+    class="tooltip-trigger" 
+    (click)="toggle()"
+    (mouseenter)="show()" 
+    (mouseleave)="hide()"
+    (focus)="show()"
+    (blur)="hide()"
+    aria-label="Show tooltip"
+  >
+    <span class="info-icon">ⓘ</span>
+  </button>
+  
+  <div 
+    class="tooltip-content" 
+    [class.visible]="isVisible" 
+    [attr.data-position]="position"
+    role="tooltip"
+  >
+    <ng-content></ng-content>
+    <div *ngIf="content" [innerHTML]="content"></div>
+  </div>
+</div>

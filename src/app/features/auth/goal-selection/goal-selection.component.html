@@ -1,0 +1,169 @@
+<div class="goal-selection-container">
+  <!-- Progress Stepper -->
+  <app-progress-stepper [steps]="steps"></app-progress-stepper>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <div class="header">
+      <h1 class="title">What brings you to ScentTwin?</h1>
+      <p class="subtitle">
+        Select all scenarios that apply. We'll use this to personalize your recommendations.
+      </p>
+      <button 
+        type="button" 
+        class="learn-more-btn"
+        (click)="toggleEducation()"
+      >
+        <span class="icon">📚</span>
+        <span>Learn about fragrance basics</span>
+      </button>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage()" role="alert">
+      <span class="error-icon">⚠️</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+    <!-- Goal Cards Grid -->
+    <div class="goals-grid">
+      <div 
+        *ngFor="let goal of goals"
+        class="goal-card glass-card"
+        [class.selected]="goal.selected"
+        (click)="toggleGoal(goal)"
+        [attr.aria-pressed]="goal.selected"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="toggleGoal(goal)"
+        (keydown.space)="toggleGoal(goal); $event.preventDefault()"
+      >
+        <div class="card-inner">
+          <div class="goal-icon">{{ goal.icon }}</div>
+          <div class="goal-content">
+            <h3 class="goal-title">{{ goal.title }}</h3>
+            <p class="goal-subtitle">{{ goal.subtitle }}</p>
+            <p class="goal-description">{{ goal.description }}</p>
+          </div>
+          <div class="checkmark" *ngIf="goal.selected">
+            <span>✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selection Summary -->
+    <div class="selection-summary" *ngIf="selectedGoals.length > 0">
+      <span class="summary-text">
+        {{ selectedGoals.length }} {{ selectedGoals.length === 1 ? 'goal' : 'goals' }} selected
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button 
+        type="button" 
+        class="btn-primary"
+        [disabled]="!canProceed || isLoading()"
+        (click)="saveGoalsAndContinue()"
+      >
+        <span *ngIf="!isLoading()">Continue</span>
+        <span *ngIf="isLoading()" class="spinner"></span>
+      </button>
+      <button 
+        type="button" 
+        class="btn-text"
+        (click)="skipForNow()"
+        [disabled]="isLoading()"
+      >
+        Skip for now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Educational Modal -->
+<div class="modal-backdrop" *ngIf="showEducation()" (click)="toggleEducation()">
+  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="toggleEducation()" aria-label="Close modal">×</button>
+    
+    <div class="modal-header">
+      <h2 class="modal-title">Fragrance Basics</h2>
+      <p class="modal-subtitle">Understanding concentration and families</p>
+    </div>
+
+    <div class="education-content">
+      <!-- Fragrance Strengths -->
+      <section class="education-section">
+        <h3 class="section-title">
+          <span class="section-icon">💧</span>
+          Fragrance Concentrations
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>Cologne (EdC)</h4>
+            <p class="concentration">2-4% concentration</p>
+            <p class="duration">Lasts 2-4 hours</p>
+            <p class="description">Lightest option, perfect for hot weather or gym</p>
+          </div>
+          <div class="info-item">
+            <h4>Eau de Toilette (EDT)</h4>
+            <p class="concentration">5-15% concentration</p>
+            <p class="duration">Lasts 4-6 hours</p>
+            <p class="description">Light to moderate, great for everyday wear</p>
+          </div>
+          <div class="info-item">
+            <h4>Eau de Parfum (EDP)</h4>
+            <p class="concentration">15-20% concentration</p>
+            <p class="duration">Lasts 6-8+ hours</p>
+            <p class="description">Moderate to strong, ideal for special occasions</p>
+          </div>
+          <div class="info-item">
+            <h4>Parfum / Extrait</h4>
+            <p class="concentration">20-30%+ concentration</p>
+            <p class="duration">Lasts 8-12+ hours</p>
+            <p class="description">Strongest and longest-lasting option</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fragrance Families -->
+      <section class="education-section">
+        <h3 class="section-title">
+          <span class="section-icon">🌸</span>
+          Fragrance Families
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>Fresh</h4>
+            <p class="notes">Citrus, aquatic, green</p>
+            <p class="description">Clean, energizing, and uplifting scents</p>
+          </div>
+          <div class="info-item">
+            <h4>Floral</h4>
+            <p class="notes">Rose, jasmine, lavender</p>
+            <p class="description">Romantic, elegant, and feminine</p>
+          </div>
+          <div class="info-item">
+            <h4>Amber (Oriental)</h4>
+            <p class="notes">Vanilla, spices, resins</p>
+            <p class="description">Warm, sweet, rich, and sensual</p>
+          </div>
+          <div class="info-item">
+            <h4>Woody</h4>
+            <p class="notes">Cedar, sandalwood, vetiver</p>
+            <p class="description">Earthy, sophisticated, and grounding</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="education-footer">
+        <p>💡 <strong>Tip:</strong> Fragrance longevity and projection depend on concentration, your skin type, and environmental factors.</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" (click)="toggleEducation()">Got it!</button>
+    </div>
+  </div>
+</div>

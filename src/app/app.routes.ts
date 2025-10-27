@@ -17,9 +17,34 @@ export const routes: Routes = [
   {
     path: 'auth',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/auth.component')
-      .then(m => m.AuthComponent),
-    title: 'Sign In - ScentTwin'
+    loadComponent: () => import('./features/auth/auth-container/auth-container.component')
+      .then(m => m.AuthContainerComponent),
+    children: [
+      {
+        path: '',
+        redirectTo: 'sign-in',
+        pathMatch: 'full'
+      },
+      {
+        path: 'sign-in',
+        loadComponent: () => import('./features/auth/sign-in/sign-in.component')
+          .then(m => m.SignInComponent),
+        title: 'Sign In - ScentTwin'
+      },
+      {
+        path: 'sign-up',
+        loadComponent: () => import('./features/auth/sign-up/sign-up.component')
+          .then(m => m.SignUpComponent),
+        title: 'Sign Up - ScentTwin'
+      }
+    ]
+  },
+  {
+    path: 'goals',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/auth/goal-selection/goal-selection.component')
+      .then(m => m.GoalSelectionComponent),
+    title: 'Select Your Goals - ScentTwin'
   },
   {
     path: 'selfie',
